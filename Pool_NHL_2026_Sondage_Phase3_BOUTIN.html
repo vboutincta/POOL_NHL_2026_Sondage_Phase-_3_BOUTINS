@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sondage Phase 3 - BOUTIN</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #003764;
+  --navy-90: #00305a;
+  --teal:    #79DAD4;
+  --teal-d:  #4cbdb6;
+  --gold:    #f5c842;
+  --bg:      #001f3f;
+  --bg2:     #002a52;
+  --surface: #0a3258;
+  --surface2:#0d3a64;
+  --line:    rgba(121,218,212,.18);
+  --line-hv: rgba(121,218,212,.35);
+  --ink:     #e8f0f7;
+  --ink-60:  rgba(232,240,247,.6);
+  --ink-30:  rgba(232,240,247,.3);
+  --green:   #2ecc71;
+  --green-bg:rgba(46,204,113,.08);
+  --red:     #e74c3c;
+  --red-bg:  rgba(231,76,60,.08);
+  --radius:  6px;
+  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-sans:  'DM Sans', system-ui, sans-serif;
+  --font-mono:  'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: linear-gradient(160deg, #001228 0%, var(--bg) 40%, var(--navy-90) 100%);
+  min-height: 100vh;
+  color: var(--ink);
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(0,20,50,.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 2px solid var(--teal);
+}
+.topbar-brand {
+  font-family: var(--font-serif);
+  font-size: 16px; color: #fff;
+}
+.topbar-brand span { color: var(--teal); }
+.deadline-pill {
+  display: flex; align-items: center; gap: 7px;
+  padding: 4px 12px;
+  border: 1px solid rgba(121,218,212,.3);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 10px; color: var(--teal);
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+.deadline-pip {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 6px var(--teal);
+  animation: blink 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── CLOSED BANNER ── */
+#closed-banner {
+  display: none;
+  max-width: 520px; margin: 80px auto; padding: 0 20px;
+  text-align: center;
+}
+.closed-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--red);
+  border-radius: var(--radius);
+  padding: 40px 32px;
+}
+.closed-card .icon { font-size: 40px; margin-bottom: 16px; }
+.closed-card h2 {
+  font-family: var(--font-serif);
+  font-size: 22px; color: var(--red); margin-bottom: 10px;
+}
+.closed-card p { font-size: 14px; color: var(--ink-60); line-height: 1.6; }
+
+/* ── WORKSPACE ── */
+#form-workspace {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+/* ── INTRO ── */
+.intro-card {
+  background: rgba(121,218,212,.07);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--teal-d);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--ink-60);
+  line-height: 1.55;
+}
+.intro-card strong { color: var(--ink); }
+
+/* ── COUNTDOWN ── */
+.countdown {
+  font-family: var(--font-mono);
+  font-size: 12px; color: var(--ink-30);
+  text-align: center; margin-bottom: 20px;
+}
+.countdown strong { color: var(--ink-30); }
+#countdown-timer { color: var(--teal-d); font-weight: 500; }
+
+/* ── ERROR ── */
+.error-banner {
+  display: none;
+  background: var(--red-bg);
+  border: 1px solid rgba(231,76,60,.3);
+  border-left: 4px solid var(--red);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 13px; color: #f1948a;
+  margin-bottom: 16px;
+}
+
+/* ── CARD ── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+  animation: fadeUp .3s ease both;
+}
+.card:nth-child(2) { animation-delay:.05s; }
+.card:nth-child(3) { animation-delay:.10s; }
+
+.card-header {
+  background: var(--navy);
+  padding: 13px 18px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.card-header h2 {
+  font-family: var(--font-serif);
+  font-size: 15px; font-weight: 400;
+  color: #fff;
+}
+.badge {
+  margin-left: auto;
+  background: var(--teal);
+  color: var(--navy);
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  padding: 3px 9px; border-radius: 20px;
+  letter-spacing: .05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.card-body { padding: 18px; }
+
+/* ── SELECT ── */
+.field-label {
+  display: block;
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--ink-30); margin-bottom: 8px;
+}
+select.field-input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 13px 14px;
+  font-family: var(--font-sans);
+  font-size: 15px; color: var(--ink);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2379DAD4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+select.field-input:focus { border-color: var(--teal); }
+select.field-input option { background: #0a2840; color: var(--ink); }
+
+/* ── PLAYER DISPLAY ── */
+#player-display {
+  display: none;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(121,218,212,.08);
+  border-left: 3px solid var(--teal-d);
+  border-radius: var(--radius);
+}
+#player-display .pd-label {
+  font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--teal-d); margin-bottom: 3px;
+}
+#player-name-display {
+  font-family: var(--font-serif);
+  font-size: 20px; color: var(--ink);
+}
+
+/* ── SECTION HEAD ── */
+.section-head {
+  display: flex; align-items: center; gap: 12px;
+  margin: 24px 0 14px;
+}
+.section-head h3 {
+  font-family: var(--font-serif);
+  font-size: 17px; color: var(--teal);
+  white-space: nowrap;
+}
+.section-head hr { flex:1; height:1px; background:var(--line); border:none; }
+.section-head .pts-note {
+  font-family: var(--font-mono);
+  font-size: 10px; color: var(--ink-30);
+  text-transform: uppercase; letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+/* ── SERIE ROW ── */
+.serie-row { padding: 18px; }
+.serie-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 16px; flex-wrap: wrap;
+}
+.serie-label {
+  font-size: 13px; font-weight: 600; color: var(--ink);
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.conf-badge {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 500; letter-spacing: .05em;
+  padding: 3px 8px; border-radius: 20px;
+  background: rgba(245,200,66,.12);
+  border: 1px solid rgba(245,200,66,.3);
+  color: var(--gold);
+}
+
+/* ── PICKER ── */
+.picker-group {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.picker-section-label {
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--ink-30); margin-bottom: 8px;
+}
+.radio-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Radio hidden, label styled */
+.radio-card input[type="radio"] { display: none; }
+.radio-card label {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 14px;
+  min-height: 48px; /* touch target */
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 14px; font-weight: 600;
+  color: var(--ink-60);
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+  white-space: nowrap;
+  background: var(--bg2);
+}
+.radio-card label:hover {
+  border-color: var(--teal-d);
+  color: var(--teal);
+  background: rgba(121,218,212,.07);
+}
+.radio-card input:checked + label {
+  background: var(--navy);
+  border-color: var(--teal);
+  color: var(--teal);
+  box-shadow: 0 0 0 2px rgba(121,218,212,.2);
+}
+.matchs-grid .radio-card label {
+  padding: 12px 10px;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  flex-direction: column;
+  gap: 2px;
+}
+.matchs-sub {
+  font-size: 9px; color: var(--ink-30);
+  font-family: var(--font-sans); font-weight: 400;
+}
+.radio-card input:checked + label .matchs-sub { color: var(--teal-d); }
+
+.team-logo-sm {
+  width: 24px; height: 24px;
+  object-fit: contain; flex-shrink: 0;
+}
+
+/* ── POINTS BANNER ── */
+.points-banner {
+  display: flex; gap: 0; flex-wrap: wrap;
+  margin-top: 16px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.pts-item {
+  flex: 1; min-width: 130px;
+  padding: 10px 14px;
+  border-right: 1px solid var(--line);
+  font-size: 12px; color: var(--ink-60);
+  line-height: 1.4;
+}
+.pts-item:last-child { border-right: none; }
+.pts-item .pts-val {
+  font-family: var(--font-mono);
+  font-size: 18px; font-weight: 500;
+  color: var(--teal); display: block;
+}
+.pts-item .pts-label { font-size: 10px; }
+
+/* ── SUBMIT ── */
+.submit-zone {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px 18px;
+  text-align: center;
+  animation: fadeUp .3s .3s ease both;
+}
+.btn-submit {
+  width: 100%;
+  background: var(--teal);
+  color: var(--navy);
+  border: none; border-radius: var(--radius);
+  padding: 16px 24px;
+  font-family: var(--font-sans);
+  font-size: 15px; font-weight: 700;
+  letter-spacing: .03em;
+  cursor: pointer;
+  transition: background .2s, transform .1s;
+  min-height: 52px;
+}
+.btn-submit:hover { background: var(--teal-d); }
+.btn-submit:active { transform: scale(.98); }
+.btn-submit:disabled { background: var(--surface2); color: var(--ink-30); cursor: not-allowed; }
+
+/* ── LOADING ── */
+#loading-box { display:none; margin-top:18px; }
+.loading-card {
+  padding: 14px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 13px; color: var(--ink-60);
+  font-family: var(--font-mono);
+}
+
+/* ── SUCCESS ── */
+#result-box { display:none; margin-top:18px; }
+.result-card {
+  background: var(--green-bg);
+  border: 1px solid rgba(46,204,113,.25);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: left;
+}
+.result-title {
+  font-family: var(--font-serif);
+  font-size: 20px; color: var(--green);
+  margin-bottom: 10px;
+}
+.result-summary {
+  font-size: 14px; color: var(--ink-60); line-height: 1.8;
+}
+.result-summary strong { color: var(--ink); }
+
+/* ── BRACKET CARD ── */
+.bracket-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 16px 16px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.bracket-label {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .12em;
+  color: var(--teal-d); margin-bottom: 16px;
+}
+.bracket-matchup {
+  display: flex; align-items: center; justify-content: center; gap: 0;
+}
+.bracket-team {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+.bracket-team img {
+  width: 56px; height: 56px; object-fit: contain;
+}
+.bt-code {
+  font-family: var(--font-serif);
+  font-size: 20px; color: var(--ink); font-weight: 400;
+}
+.bt-name {
+  font-size: 11px; color: var(--ink-60); line-height: 1.3; text-align: center;
+}
+.bt-conf {
+  font-family: var(--font-mono);
+  font-size: 9px; color: var(--teal-d);
+  background: rgba(121,218,212,.08);
+  border: 1px solid var(--line);
+  border-radius: 20px; padding: 2px 8px;
+}
+.bracket-vs {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; padding: 0 12px; flex-shrink: 0;
+}
+.bv-trophy { font-size: 22px; }
+.bv-label {
+  font-family: var(--font-mono);
+  font-size: 10px; color: var(--ink-30);
+  text-transform: uppercase; letter-spacing: .08em;
+}
+
+/* ── SHORT INTRO ── */
+.short-intro {
+  text-align: center;
+  font-size: 13px; color: var(--ink-60);
+  margin-bottom: 8px;
+}
+
+/* ── ALREADY SUBMITTED ── */
+#already-submitted-banner {
+  display: none;
+  background: rgba(245,200,66,.08);
+  border: 1px solid rgba(245,200,66,.3);
+  border-left: 4px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  font-size: 14px; color: var(--gold);
+  line-height: 1.6;
+}
+#already-submitted-banner strong { color: #fff; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(0,10,25,.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--surface2);
+  border: 1px solid var(--line-hv);
+  border-radius: 10px;
+  padding: 28px 24px;
+  max-width: 380px; width: 100%;
+  animation: fadeUp .2s ease both;
+}
+.modal-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .12em;
+  color: var(--teal-d); margin-bottom: 8px;
+}
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 20px; color: var(--ink);
+  margin-bottom: 16px; line-height: 1.3;
+}
+.modal-identity {
+  background: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.modal-identity .mi-label {
+  font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--ink-30); margin-bottom: 4px;
+}
+.modal-identity .mi-nickname {
+  font-family: var(--font-serif);
+  font-size: 22px; color: var(--teal);
+}
+.modal-identity .mi-fullname {
+  font-size: 12px; color: var(--ink-60); margin-top: 2px;
+}
+.modal-recap {
+  font-size: 13px; color: var(--ink-60);
+  line-height: 1.7; margin-bottom: 20px;
+}
+.modal-recap strong { color: var(--ink); }
+.modal-btns {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.btn-modal-confirm {
+  padding: 13px;
+  background: var(--teal);
+  color: var(--navy);
+  border: none; border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-modal-confirm:hover { background: var(--teal-d); }
+.btn-modal-cancel {
+  padding: 13px;
+  background: transparent;
+  color: var(--ink-60);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-modal-cancel:hover { border-color: var(--line-hv); color: var(--ink); }
+
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+  .topbar-brand { font-size: 14px; }
+  .picker-group { grid-template-columns: 1fr; }
+  .pts-item { min-width: 100%; border-right: none; border-bottom: 1px solid var(--line); }
+  .pts-item:last-child { border-bottom: none; }
+  .section-head h3 { font-size: 15px; }
+  select.field-input { font-size: 16px; } /* évite zoom auto iOS */
+  .btn-submit { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">Pool NHL <span>2026</span> — Phase 3 · BOUTIN</div>
+  <div class="deadline-pill">
+    <div class="deadline-pip"></div>
+    <span>FERME 3 JUIN · 20H00</span>
+  </div>
+</div>
+
+<div id="closed-banner">
+  <div class="closed-card">
+    <div class="icon">🔒</div>
+    <h2>Sondage fermé</h2>
+    <p>La date limite était le <strong>3 juin 2026 à 20h00</strong>.<br>
+    Les prédictions ne sont plus acceptées.<br><br>Bonne chance à tous — que le meilleur gagne !</p>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMATION -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal-box">
+    <div class="modal-eyebrow">Confirmation requise</div>
+    <div class="modal-title">Tu confirmes être…</div>
+    <div class="modal-identity">
+      <div class="mi-label">Player name</div>
+      <div class="mi-nickname" id="modal-nickname">—</div>
+      <div class="mi-fullname" id="modal-fullname">—</div>
+    </div>
+    <div class="modal-recap" id="modal-recap">—</div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="annulerModal()">← Corriger</button>
+      <button class="btn-modal-confirm" onclick="confirmer()">Oui, c'est moi ✓</button>
+    </div>
+  </div>
+</div>
+
+<div id="form-workspace">
+
+  <div id="already-submitted-banner"></div>
+
+  <!-- BRACKET RECAP -->
+  <div class="bracket-card">
+    <div class="bracket-label">Finale de la Coupe Stanley 2026</div>
+    <div class="bracket-matchup">
+      <div class="bracket-team">
+        <img src="https://assets.nhle.com/logos/nhl/svg/CAR_dark.svg" alt="CAR" onerror="this.style.display='none'">
+        <span class="bt-code">CAR</span>
+        <span class="bt-name">Carolina Hurricanes</span>
+        <span class="bt-conf">Finale de Conf. Est</span>
+      </div>
+      <div class="bracket-vs">
+        <span class="bv-trophy">🏆</span>
+        <span class="bv-label">vs</span>
+      </div>
+      <div class="bracket-team">
+        <img src="https://assets.nhle.com/logos/nhl/svg/VGK_dark.svg" alt="VGK" onerror="this.style.display='none'">
+        <span class="bt-code">VGK</span>
+        <span class="bt-name">Vegas Golden Knights</span>
+        <span class="bt-conf">Finale de Conf. Ouest</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="short-intro">Qui soulève la Coupe — et en combien de matchs ?</div>
+
+  <div class="countdown">⏱ <strong id="countdown-timer">—</strong></div>
+
+  <div class="error-banner" id="error-banner"></div>
+
+  <!-- IDENTITÉ -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Ton identité</h2>
+      <div class="badge">SÉLECTIONNE TON NOM</div>
+    </div>
+    <div class="card-body">
+      <label class="field-label" for="participant-select">Sélectionne ton nom <span style="color:var(--teal)">*</span></label>
+      <select class="field-input" id="participant-select">
+        <option value="">— Choisis ton nom dans la liste —</option>
+      </select>
+      <div id="player-display">
+        <div class="pd-label">Player name</div>
+        <div id="player-name-display"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRÉDICTION -->
+  <div class="section-head">
+    <h3>🏆 Coupe Stanley</h3>
+    <hr>
+    <span class="pts-note">10 pts équipe · +3 pts matchs</span>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Prédiction — Carolina vs Vegas</h2>
+      <div class="badge">GRANDE FINALE</div>
+    </div>
+    <div class="serie-row">
+      <div class="serie-header">
+        <div class="serie-label">
+          <img class="team-logo-sm" src="https://assets.nhle.com/logos/nhl/svg/CAR_dark.svg" alt="CAR" onerror="this.style.display='none'">
+          Carolina Hurricanes
+          <span style="color:var(--ink-30);font-weight:400">vs</span>
+          <img class="team-logo-sm" src="https://assets.nhle.com/logos/nhl/svg/VGK_dark.svg" alt="VGK" onerror="this.style.display='none'">
+          Vegas Golden Knights
+        </div>
+        <span class="conf-badge">COUPE STANLEY</span>
+      </div>
+
+      <div class="picker-group">
+        <div>
+          <div class="picker-section-label">Équipe gagnante — 10 pts</div>
+          <div class="radio-grid">
+            <div class="radio-card">
+              <input type="radio" name="sc_equipe" id="eq_car" value="CAR">
+              <label for="eq_car">
+                <img class="team-logo-sm" src="https://assets.nhle.com/logos/nhl/svg/CAR_dark.svg" alt="CAR" onerror="this.style.display='none'">
+                CAR
+              </label>
+            </div>
+            <div class="radio-card">
+              <input type="radio" name="sc_equipe" id="eq_vgk" value="VGK">
+              <label for="eq_vgk">
+                <img class="team-logo-sm" src="https://assets.nhle.com/logos/nhl/svg/VGK_dark.svg" alt="VGK" onerror="this.style.display='none'">
+                VGK
+              </label>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="picker-section-label">Nombre de matchs — +3 pts</div>
+          <div class="radio-grid matchs-grid">
+            <div class="radio-card"><input type="radio" name="sc_matchs" id="m4" value="4"><label for="m4">4<span class="matchs-sub">sweep</span></label></div>
+            <div class="radio-card"><input type="radio" name="sc_matchs" id="m5" value="5"><label for="m5">5<span class="matchs-sub">matchs</span></label></div>
+            <div class="radio-card"><input type="radio" name="sc_matchs" id="m6" value="6"><label for="m6">6<span class="matchs-sub">matchs</span></label></div>
+            <div class="radio-card"><input type="radio" name="sc_matchs" id="m7" value="7"><label for="m7">7<span class="matchs-sub">matchs</span></label></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="points-banner">
+        <div class="pts-item"><span class="pts-val">10 pts</span><span class="pts-label">Bonne équipe</span></div>
+        <div class="pts-item"><span class="pts-val">+3 pts</span><span class="pts-label">Bons matchs</span></div>
+        <div class="pts-item"><span class="pts-val">13 pts</span><span class="pts-label">Maximum possible</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOUMETTRE -->
+  <div class="submit-zone">
+    <button class="btn-submit" id="btn-submit" type="button" onclick="soumettre()">
+      Soumettre ma prédiction →
+    </button>
+    <div id="loading-box"><div class="loading-card">⏳ Envoi en cours…</div></div>
+    <div id="result-box">
+      <div class="result-card">
+        <div class="result-title">✓ Prédiction soumise !</div>
+        <div class="result-summary" id="result-summary"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DEADLINE  = new Date('2026-06-03T20:00:00-04:00');
+const FORMSPREE = 'https://formspree.io/f/xbdbvokr';
+
+const PARTICIPANTS = [
+  { nom: 'Pascale Laverdure',  nickname: 'Ti-cass' },
+  { nom: 'Carl Boutin',        nickname: "Bout'criss" },
+  { nom: 'Alexandra Rondeau',  nickname: 'The Rookie' },
+  { nom: 'Valerie Boutin',     nickname: 'Valo Dalot' },
+  { nom: 'Pénélope Landry',    nickname: 'Penny' },
+  { nom: 'Maxime Charland',    nickname: 'Maxime Charland' },
+  { nom: 'Sonia Vallerand',    nickname: 'Vallerand' },
+  { nom: 'Pascal Bernier',     nickname: 'Biquette' },
+  { nom: 'Chloé Jodoin',       nickname: 'Jodoin' },
+  { nom: 'Vincent Boutin',     nickname: 'BOOTS - PUCK YEAH' },
+  { nom: 'Patrick Phaneuf',    nickname: 'Roadrunner' },
+];
+
+// ── INIT DROPDOWN ──
+(function () {
+  const sel = document.getElementById('participant-select');
+  PARTICIPANTS.forEach((p, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = p.nom + ' — ' + p.nickname;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', () => {
+    const display = document.getElementById('player-display');
+    if (sel.value === '') { display.style.display = 'none'; return; }
+    document.getElementById('player-name-display').textContent = PARTICIPANTS[sel.value].nickname;
+    display.style.display = 'block';
+  });
+})();
+
+// ── DEADLINE ──
+function checkDeadline() {
+  if (new Date() >= DEADLINE) {
+    document.getElementById('form-workspace').style.display = 'none';
+    document.getElementById('closed-banner').style.display  = 'block';
+    return true;
+  }
+  return false;
+}
+function updateCountdown() {
+  if (checkDeadline()) return;
+  const diff = DEADLINE - new Date();
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000)  / 60000);
+  const s = Math.floor((diff % 60000)    / 1000);
+  const el = document.getElementById('countdown-timer');
+  if (el) el.textContent = (d > 0 ? d + 'j ' : '') +
+    String(h).padStart(2,'0') + 'h ' +
+    String(m).padStart(2,'0') + 'm ' +
+    String(s).padStart(2,'0') + 's';
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ── LOCALSTORAGE KEY ──
+const LS_KEY = 'pool_nhl_2026_finale_boutin_submitted';
+
+// ── VÉRIFIER DOUBLON AU CHARGEMENT ──
+(function checkAlreadySubmitted() {
+  const stored = localStorage.getItem(LS_KEY);
+  if (!stored) return;
+  try {
+    const data = JSON.parse(stored);
+    const banner = document.getElementById('already-submitted-banner');
+    banner.innerHTML =
+      '⚠ <strong>Tu as déjà soumis ta prédiction</strong> (' + data.nickname + ' — ' +
+      data.equipe + ' en ' + data.matchs + ' matchs, soumis le ' + data.soumis_le + ').<br>' +
+      'Contacte Vincent si tu veux la modifier.';
+    banner.style.display = 'block';
+    document.getElementById('btn-submit').disabled = true;
+    document.getElementById('btn-submit').textContent = '✓ Prédiction déjà soumise';
+  } catch(e) {}
+})();
+
+// ── ERREUR ──
+function showError(msg) {
+  const el = document.getElementById('error-banner');
+  el.textContent = msg; el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function hideError() { document.getElementById('error-banner').style.display = 'none'; }
+
+// ── PENDING SUBMISSION (stocké entre modale et envoi) ──
+let pendingPayload = null;
+
+// ── OUVRIR MODALE ──
+function soumettre() {
+  if (checkDeadline()) return;
+  hideError();
+
+  const idx = document.getElementById('participant-select').value;
+  if (idx === '') { showError('⚠ Sélectionne ton nom dans la liste.'); return; }
+  const p = PARTICIPANTS[idx];
+
+  const eq = document.querySelector('input[name="sc_equipe"]:checked');
+  if (!eq) { showError("⚠ Sélectionne l'équipe gagnante (CAR ou VGK)."); return; }
+
+  const mx = document.querySelector('input[name="sc_matchs"]:checked');
+  if (!mx) { showError('⚠ Sélectionne le nombre de matchs (4 à 7).'); return; }
+
+  const soumis_le = new Date().toLocaleString('fr-CA', {
+    year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'
+  });
+
+  pendingPayload = {
+    _subject:  'Pool NHL 2026 — Finale — ' + p.nickname,
+    phase:     'Phase Finale — Coupe Stanley 2026',
+    nom:       p.nom,
+    nickname:  p.nickname,
+    equipe:    eq.value,
+    matchs:    mx.value,
+    soumis_le: soumis_le,
+  };
+
+  // Remplir la modale
+  document.getElementById('modal-nickname').textContent = p.nickname;
+  document.getElementById('modal-fullname').textContent = p.nom;
+  document.getElementById('modal-recap').innerHTML =
+    '🏒 Équipe gagnante : <strong>' + eq.value + '</strong><br>' +
+    '🎯 En : <strong>' + mx.value + ' matchs</strong>';
+  document.getElementById('modal-confirm').classList.add('open');
+}
+
+function annulerModal() {
+  document.getElementById('modal-confirm').classList.remove('open');
+  pendingPayload = null;
+}
+
+// ── CONFIRMER ET ENVOYER ──
+async function confirmer() {
+  document.getElementById('modal-confirm').classList.remove('open');
+  if (!pendingPayload) return;
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  document.getElementById('loading-box').style.display = 'block';
+  document.getElementById('result-box').style.display  = 'none';
+
+  const payload = pendingPayload;
+  pendingPayload = null;
+
+  try {
+    const res = await fetch(FORMSPREE, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body:    JSON.stringify(payload),
+    });
+    document.getElementById('loading-box').style.display = 'none';
+
+    if (res.ok) {
+      // Enregistrer dans localStorage pour bloquer double soumission
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        nickname:  payload.nickname,
+        equipe:    payload.equipe,
+        matchs:    payload.matchs,
+        soumis_le: payload.soumis_le,
+      }));
+      btn.textContent = '✓ Prédiction soumise';
+      document.getElementById('result-summary').innerHTML =
+        '<strong>' + payload.nom + '</strong> — <em>' + payload.nickname + '</em><br>' +
+        '🏒 Équipe gagnante : <strong>' + payload.equipe + '</strong><br>' +
+        '🎯 En : <strong>' + payload.matchs + ' matchs</strong><br><br>' +
+        'Ta prédiction a été enregistrée automatiquement. Bonne chance ! 🏆';
+      document.getElementById('result-box').style.display = 'block';
+      document.getElementById('result-box').scrollIntoView({ behavior:'smooth', block:'center' });
+    } else {
+      btn.disabled = false;
+      showError("⚠ Erreur lors de l'envoi. Réessaie ou contacte Vincent.");
+    }
+  } catch (e) {
+    document.getElementById('loading-box').style.display = 'none';
+    btn.disabled = false;
+    showError('⚠ Erreur réseau. Vérifie ta connexion et réessaie.');
+  }
+}
+
+checkDeadline();
+</script>
+</body>
+</html>
